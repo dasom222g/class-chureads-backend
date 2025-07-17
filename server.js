@@ -1,7 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
 import { testTagGenerate } from "./services/tagService.js";
-import postRouter from "./routes/posts.js";
+import postRouter, { init } from "./routes/posts.js";
+import { connectDB } from "./database/db.js";
 
 // 환경변수 로드
 // 전역으로 로드해서 모든 node.js모듈 내에서 접근가능
@@ -17,7 +18,9 @@ app.use(express.urlencoded({ extended: true }));
 // 라우터 미들웨어 등록
 app.use("/posts", postRouter);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log("Server at..", PORT);
   // testTagGenerate();
+  const db = await connectDB();
+  init(db);
 });

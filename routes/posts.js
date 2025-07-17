@@ -1,4 +1,5 @@
 import express from "express";
+import { generateTags } from "../services/tagService.js";
 
 // 게시물 관련 모든 API 엔드포인트를 관리하는 라우터
 const router = express.Router();
@@ -13,7 +14,8 @@ export const init = (db) => {
 router.get("/", async (req, res) => {
   try {
     // DB에서 데이터 불러오기
-    res.status(200).json({ message: "GET요청 성공했습니다" });
+    const posts = await collection.find().toArray();
+    res.status(200).json(posts);
     console.log("GET요청 성공");
   } catch (error) {
     console.log(`GET요청 에러: ${error}`);
@@ -37,16 +39,22 @@ router.post("/", async (req, res) => {
   // 요청 body에서 게시물 데이터를 받아서 데이터베이스에 저장
   try {
     const post = req.body;
+
+    // GPT AI로 태그 생성
+    const tags = await generateTags(post.content);
+
+    // 데이터 추가
     const newItem = {
       ...post,
       likeCount: 0,
       likedUsers: [], //좋아요 한 UserID목록
+      tags,
       createdAt: new Date(),
     };
     const result = await collection.insertOne(newItem);
 
     // TODO: 새 게시물 알림을 모든 클라이언트에게 전송
-    res.status(201).json(result);
+    res.status(201).json({ ...result, tags });
   } catch (error) {
     console.log(error);
   }

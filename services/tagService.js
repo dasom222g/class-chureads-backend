@@ -66,7 +66,7 @@ const createTagPrompt = (content) => {
  *
  * @returns {Promise<Array<string>>} 생성된 태그 3개가 담긴 문자열 배열
  */
-const generateTags = async (content) => {
+export const generateTags = async (content) => {
   const messages = createTagPrompt(content);
 
   try {
@@ -77,10 +77,11 @@ const generateTags = async (content) => {
       max_tokens: 4000,
       top_p: 1,
     });
-    console.log("message", response.choices[0].message);
-    const data = [...messages, response.choices[0].message];
-    // console.log("data", data);
-    return data;
+
+    // 미션: AI가 출력한 태그들의 텍스트를 배열로 변환하여 반환하기
+    const tagText = response.choices[0].message.content;
+    const tags = tagText.split(",");
+    return tags;
   } catch (error) {
     console.log(error);
     throw error;
@@ -100,6 +101,6 @@ export const testTagGenerate = async () => {
     console.log(`============ 테스트 ${index} =============`);
     console.log("⚠️ 원본:", content);
     const result = await generateTags(content);
-    // console.log("🚀 ~ result:", result);
+    console.log("🚀 ~ result:", result);
   });
 };

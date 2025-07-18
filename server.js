@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
 
-// CORS 설정
+// CORS 설정 - 순서 중요⭐️
 app.use(cors()); // 모든 도메인 허용
 
 // Json 파싱 설정
